@@ -4,7 +4,6 @@
 #include <cmath>
 #include <iostream>
 #include <omp.h>
-#include "timer.h"
 
 double** read_matrix(int n);
 
@@ -29,7 +28,7 @@ int main(int argc, char* argv[])
 
 	double norm, diff;
 
-	double start_time = omp_get_wtime();
+	double start = omp_get_wtime();
 
 	for (int i = 0; i < n; ++i)
 	{
@@ -67,7 +66,7 @@ int main(int argc, char* argv[])
 		memcpy(x, x_n, n * sizeof(double));
 	}
 	while (norm > 1e-8 && ++it < 10000);
-	double elapsed = omp_get_wtime() - start_time;
+	double elapsed = omp_get_wtime() - start;
 
 	printf("Matrix Size: %d*%d Number of iterations(K): %d\n", n, n, it);
 	printf("Total time = %10.8f [ms]\n", elapsed);
