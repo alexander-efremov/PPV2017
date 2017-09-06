@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	double* x = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
 	double* x_n = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
 
-	double norm, diff;
+	double norm;
 
 	const double start = omp_get_wtime();
 
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 			x_n[i] += a[i][i] * x[i];
 			x_n[i] /= a[i][i];
 
-			diff = fabs(x_n[i] - x[i]);
+			const double diff = fabs(x_n[i] - x[i]);
 			if (diff > norm)
 			{
 				norm = diff;
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 		norm = fabs(x[0] - x_n[0]);
 		for (int k = 0; k < n; k++)
 		{
-			diff = fabs(x[k] - x_n[k]);
+			const double diff = fabs(x[k] - x_n[k]);
 			if (diff > norm)
 			{
 				norm = diff;
