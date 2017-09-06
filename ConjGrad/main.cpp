@@ -7,6 +7,8 @@
 
 double** read_matrix(int n);
 
+double* read_vector(int n);
+
 void zero_vector(double* vector, int n);
 
 double scalar_mult(double* b1, double* b2, int n);
@@ -14,16 +16,13 @@ double scalar_mult(double* b1, double* b2, int n);
 int main(int argc, char* argv[])
 {
 	const int n = atoi(argv[1]);
+	
 	printf("n = %d\n", n);
 
-	double alpha, betta, d1;
+	double alpha, beta, d1, d2;
 
 	double** a = read_matrix(n);
-	double* b = static_cast<double *>(malloc(n * sizeof(double)));
-	for (int i = 0; i < n; ++i)
-	{
-		b[i] = 1.0;
-	}
+	double* b = read_vector(n);
 	double* x = static_cast<double*>(malloc(n * sizeof(double)));
 	double* x_n = static_cast<double*>(malloc(n * sizeof(double)));
 	double* r = static_cast<double*>(malloc(n * sizeof(double)));
@@ -47,7 +46,7 @@ int main(int argc, char* argv[])
 	{
 		x[i] = b[i] / a[i][i];
 	}
-	
+
 	// 2. Calculate residual vector r0 = b - A * x0
 	for (int i = 0; i < n; i++)
 	{
@@ -57,7 +56,7 @@ int main(int argc, char* argv[])
 		}
 		r[i] = b[i] - tmp[i];
 	}
-	
+
 	// 3. Calulate direction vector h0 = r0
 	memcpy(h, r, n * sizeof(double));
 
@@ -65,10 +64,11 @@ int main(int argc, char* argv[])
 	int it = -1;
 	do
 	{
-		norm = 0.0;
+		norm = DBL_MIN;
 		zero_vector(tmp, n);
 
 		//1 Вычисление alpha
+		d1 = 0; d2 = 0;
 		d1 = scalar_mult(r, r, n);
 
 		for (int i = 0; i < n; i++)
@@ -79,7 +79,8 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		alpha = d1 / scalar_mult(tmp, h, n);
+		d2 = scalar_mult(tmp, h, n);
+		alpha = d1 / d2;
 
 		//2 Вычисление r_n
 		for (int i = 0; i < n; i++)
@@ -88,12 +89,14 @@ int main(int argc, char* argv[])
 		}
 
 		//3 Вычисление betta
-		betta = scalar_mult(r_n, r_n, n) / d1;
+		d2 = 0.0;
+		d2 = scalar_mult(r_n, r_n, n);
+		beta = d2 / d1;
 
 		//4 Вычисление h_n
 		for (int i = 0; i < n; i++)
 		{
-			h_n[i] = r_n[i] + betta * h[i];
+			h_n[i] = r_n[i] + beta * h[i];
 		}
 
 		//5 Вычисление x_n
@@ -117,8 +120,7 @@ int main(int argc, char* argv[])
 		zero_vector(x_n, n);
 		zero_vector(r_n, n);
 		zero_vector(h_n, n);
-	}
-	while (norm > 1e-8 && ++it < 10000);
+	} while (norm > 1e-8 && ++it < 10000);
 
 	const double elapsed = GetTimer();
 
@@ -143,20 +145,50 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+double* read_vector(int n)
+{
+	double* b = static_cast<double *>(malloc(n * sizeof(double)));
+	std::ifstream f;
+	switch (n)
+	{
+	case 1024:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_1024.dat");
+		break;
+	case 2048:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_2048.dat");
+		break;
+	case 4096:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_4096.dat");
+		break;
+	case 8192:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_8192.dat");
+		break;
+	default:
+		f.open("default.dat");
+		break;
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		f >> b[i];
+	}
+
+	f.close();
+
+	return b;
+}
+
 double** read_matrix(int n)
 {
-	double** a = static_cast<double **>(_mm_malloc(n * sizeof(double *), 64));
+	double** a = static_cast<double **>(malloc(n * sizeof(double *)));
 	for (int i = 0; i < n; ++i)
 	{
-		a[i] = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
+		a[i] = static_cast<double *>(malloc(n * sizeof(double)));
 	}
 
 	std::ifstream f;
 	switch (n)
 	{
-	case 512:
-		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_512.dat");
-		break;
 	case 1024:
 		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_1024.dat");
 		break;

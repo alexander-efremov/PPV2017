@@ -91,11 +91,32 @@ int main(int argc, char* argv[])
 double* read_vector(int n)
 {
 	double* b = static_cast<double *>(malloc(n * sizeof(double)));
-
-	for (int i = 0; i < n; ++i)
+	std::ifstream f;
+	switch (n)
 	{
-		b[i] = 1.0;
+	case 1024:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_1024.dat");
+		break;
+	case 2048:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_2048.dat");
+		break;
+	case 4096:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_4096.dat");
+		break;
+	case 8192:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_8192.dat");
+		break;
+	default:
+		f.open("default.dat");
+		break;
 	}
+
+	for (int i = 0; i < n; i++)
+	{
+		f >> b[i];
+	}
+
+	f.close();
 
 	return b;
 }
@@ -111,9 +132,6 @@ double** read_matrix(int n)
 	std::ifstream f;
 	switch (n)
 	{
-	case 512:
-		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_512.dat");
-		break;
 	case 1024:
 		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_1024.dat");
 		break;

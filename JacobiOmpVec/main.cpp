@@ -7,6 +7,8 @@
 
 double** read_matrix(int n);
 
+double* read_vector(int n);
+
 int main(int argc, char* argv[])
 {
 	const int n = atoi(argv[1]);
@@ -19,12 +21,7 @@ int main(int argc, char* argv[])
 	omp_set_num_threads(max_thread_number);
 
 	double** a = read_matrix(n);
-
-	double* b = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
-	for (int i = 0; i < n; ++i)
-	{
-		b[i] = 1.0;
-	}
+	double* b = read_vector(n);
 
 	double* x = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
 	double* x_n = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
@@ -39,7 +36,7 @@ int main(int argc, char* argv[])
 	}
 
 	int it = -1;
-	int n1 = 0;
+	int n1;
 #pragma omp parallel
 	{
 #pragma omp master
@@ -120,6 +117,39 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+double* read_vector(int n)
+{
+	double* b = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
+	std::ifstream f;
+	switch (n)
+	{
+	case 1024:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_1024.dat");
+		break;
+	case 2048:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_2048.dat");
+		break;
+	case 4096:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_4096.dat");
+		break;
+	case 8192:
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_8192.dat");
+		break;
+	default:
+		f.open("default.dat");
+		break;
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		f >> b[i];
+	}
+
+	f.close();
+
+	return b;
+}
+
 double** read_matrix(int n)
 {
 	double** a = static_cast<double **>(_mm_malloc(n * sizeof(double *), 64));
@@ -131,9 +161,6 @@ double** read_matrix(int n)
 	std::ifstream f;
 	switch (n)
 	{
-	case 512:
-		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_512.dat");
-		break;
 	case 1024:
 		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_1024.dat");
 		break;
