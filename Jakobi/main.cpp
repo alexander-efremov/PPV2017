@@ -78,6 +78,7 @@ int main(int argc, char* argv[])
 	free(b);
 	free(x);
 	free(x_n);
+	getchar();
 	return 0;
 }
 
@@ -105,7 +106,7 @@ double** read_matrix(int n)
 	switch (n)
 	{
 	case 512:
-		f.open("C:Users/HOME/Source/Repos/Jakobi/data/m_512.dat");
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_512.dat");
 		break;
 	case 1024:
 		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_1024.dat");
@@ -138,7 +139,6 @@ double** read_matrix(int n)
 		}
 	}
 
-	f.close();
-
+	f.close();	
 	return a;
 }

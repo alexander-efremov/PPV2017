@@ -24,6 +24,8 @@ int main(int argc, char* argv[])
 
 	StartTimer();
 
+#pragma simd
+#pragma vector aligned
 	for (int i = 0; i < n; ++i)
 	{
 		x[i] = b[i] / a[i][i];
@@ -32,14 +34,20 @@ int main(int argc, char* argv[])
 	int it = -1;
 	do
 	{
-		double *p = x_n, *last = x_n + n;
-		while (p != last) *p++ = 0.0;
+#pragma simd
+#pragma vector aligned
+		for (int i = 0; i < n; ++i)
+		{
+			x_n[i] = 0.0;
+		}
+		
 		norm = DBL_MIN;
 
 		for (int i = 0; i < n; ++i)
 		{
 			x_n[i] = b[i];
 #pragma simd
+#pragma vector aligned
 			for (int j = 0; j < n; ++j)
 			{
 				x_n[i] -= a[i][j] * x[j];
@@ -60,6 +68,7 @@ int main(int argc, char* argv[])
 		memcpy(x, x_n, n * sizeof(double));
 	}
 	while (norm > 1e-8 && ++it < 10000);
+	
 	const double elapsed = GetTimer();
 
 	printf("Matrix Size: %d*%d Number of iterations(K): %d\n", n, n, it);
