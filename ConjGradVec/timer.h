@@ -9,6 +9,7 @@
 #include <sys/time.h>
 
 #endif
+#include <cstdio>
 
 #ifdef WIN32
 double PCFreq = 0.0;

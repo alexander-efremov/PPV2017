@@ -2,8 +2,8 @@
 #include <fstream>
 #include <cfloat>
 #include <cmath>
-#include "timer.h"
 #include <iostream>
+#include "timer.h"
 
 double** read_matrix(int n);
 
@@ -157,6 +157,6 @@ double** read_matrix(int n)
 		}
 	}
 
-	f.close();	
+	f.close();
 	return a;
 }

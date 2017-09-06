@@ -2,8 +2,8 @@
 #include <fstream>
 #include <cfloat>
 #include <cmath>
-#include <iostream>
 #include <omp.h>
+#include <iostream>
 
 double** read_matrix(int n);
 
