@@ -7,22 +7,31 @@
 
 double** read_matrix(int n);
 
-double* read_vector(int n);
-
 int main(int argc, char* argv[])
 {
 	const int n = atoi(argv[1]);
 	printf("n = %d\n", n);
 
-	double** a = read_matrix(n);
-	double* b = read_vector(n);
+	int max_thread_number = omp_get_max_threads();
 
-	double* x = static_cast<double *>(malloc(n * sizeof(double)));
-	double* x_n = static_cast<double *>(malloc(n * sizeof(double)));
+	std::cout << "The thread number: " << max_thread_number << std::endl;
+
+	omp_set_num_threads(max_thread_number);
+
+	double** a = read_matrix(n);
+
+	double* b = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
+	for (int i = 0; i < n; ++i)
+	{
+		b[i] = 1.0;
+	}
+
+	double* x = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
+	double* x_n = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
 
 	double norm, diff;
 
-	double start = omp_get_wtime();
+	const double start = omp_get_wtime();
 
 	for (int i = 0; i < n; ++i)
 	{
@@ -30,19 +39,48 @@ int main(int argc, char* argv[])
 	}
 
 	int it = -1;
+	int n1 = 0;
+#pragma omp parallel
+	{
+#pragma omp master
+		{
+			max_thread_number = omp_get_num_threads();
+			n1 = ((n / max_thread_number) / 8) * max_thread_number * 8;
+		}
+	}
 	do
 	{
-		double *p = x_n, *last = x_n + n;
-		while (p != last) *p++ = 0.0;
+#pragma omp parallel for
+#pragma simd
+#pragma vector aligned
+		for (int i = 0; i < n1; ++i)
+		{
+			x_n[i] = 0.0;
+		}		
+
+		for (int i = n1; i < n; ++i)
+		{
+			x_n[i] = 0.0;
+		}
+
 		norm = DBL_MIN;
 
+#pragma omp parallel for
 		for (int i = 0; i < n; ++i)
 		{
 			x_n[i] = b[i];
-			for (int j = 0; j < n; ++j)
+#pragma simd
+#pragma vector aligned
+			for (int j = 0; j < n1; ++j)
 			{
 				x_n[i] -= a[i][j] * x[j];
 			}
+			
+			for (int j = n1; j < n; ++j)
+			{
+				x_n[i] -= a[i][j] * x[j];
+			}
+
 			x_n[i] += a[i][i] * x[i];
 			x_n[i] /= a[i][i];
 
@@ -63,49 +101,38 @@ int main(int argc, char* argv[])
 			}
 			x[k] = x_n[k];
 		}
-	}
-	while (norm > 1e-8 && ++it < 10000);
-	double elapsed = omp_get_wtime() - start;
+	} while (norm > 1e-8 && ++it < 10000);
+	
+	const double elapsed = omp_get_wtime() - start;
 
 	printf("Matrix Size: %d*%d Number of iterations(K): %d\n", n, n, it);
 	printf("Total time = %10.8f [ms]\n", elapsed);
 
 	for (int i = 0; i < n; ++i)
 	{
-		free(a[i]);
+		_mm_free(a[i]);
 	}
-	free(a);
-	free(b);
-	free(x);
-	free(x_n);
+	_mm_free(a);
+	_mm_free(b);
+	_mm_free(x);
+	_mm_free(x_n);
+	getchar();
 	return 0;
-}
-
-double* read_vector(int n)
-{
-	double* b = static_cast<double *>(malloc(n * sizeof(double)));
-
-	for (int i = 0; i < n; ++i)
-	{
-		b[i] = 1.0;
-	}
-
-	return b;
 }
 
 double** read_matrix(int n)
 {
-	double** a = static_cast<double **>(malloc(n * sizeof(double *)));
+	double** a = static_cast<double **>(_mm_malloc(n * sizeof(double *), 64));
 	for (int i = 0; i < n; ++i)
 	{
-		a[i] = static_cast<double *>(malloc(n * sizeof(double)));
+		a[i] = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
 	}
 
 	std::ifstream f;
 	switch (n)
 	{
 	case 512:
-		f.open("C:Users/HOME/Source/Repos/Jakobi/data/m_512.dat");
+		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_512.dat");
 		break;
 	case 1024:
 		f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_1024.dat");

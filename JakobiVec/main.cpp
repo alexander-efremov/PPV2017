@@ -7,15 +7,18 @@
 
 double** read_matrix(int n);
 
-double* read_vector(int n);
-
 int main(int argc, char* argv[])
 {
 	const int n = atoi(argv[1]);
 	printf("n = %d\n", n);
 
 	double** a = read_matrix(n);
-	double* b = read_vector(n);
+
+	double* b = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
+	for (int i = 0; i < n; ++i)
+	{
+		b[i] = 1.0;
+	}
 
 	double* x = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
 	double* x_n = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
@@ -84,18 +87,6 @@ int main(int argc, char* argv[])
 	_mm_free(x_n);
 	getchar();
 	return 0;
-}
-
-double* read_vector(int n)
-{
-	double* b = static_cast<double *>(_mm_malloc(n * sizeof(double), 64));
-
-	for (int i = 0; i < n; ++i)
-	{
-		b[i] = 1.0;
-	}
-
-	return b;
 }
 
 double** read_matrix(int n)

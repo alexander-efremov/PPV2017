@@ -14,11 +14,11 @@ int main(int argc, char* argv[])
 	const int n = atoi(argv[1]);
 	printf("n = %d\n", n);
 
-	int nProcessors = omp_get_max_threads();
+	const int max_thread_number = omp_get_max_threads();
 
-	std::cout << nProcessors << std::endl;
+	std::cout << "The thread number: " << max_thread_number << std::endl;
 
-	omp_set_num_threads(nProcessors);
+	omp_set_num_threads(max_thread_number);
 
 	double** a = read_matrix(n);
 	double* b = read_vector(n);
@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
 
 	double start = omp_get_wtime();
 
+#pragma omp parallel for
 	for (int i = 0; i < n; ++i)
 	{
 		x[i] = b[i] / a[i][i];
@@ -38,14 +39,18 @@ int main(int argc, char* argv[])
 	int it = -1;
 	do
 	{
-		double *p = x_n, *last = x_n + n;
-		while (p != last) *p++ = 0.0;
+#pragma omp parallel for
+		for (int i = 0; i < n; ++i)
+		{
+			x_n[i] = 0.0;
+		}
+
 		norm = DBL_MIN;
 
+#pragma omp parallel for
 		for (int i = 0; i < n; ++i)
 		{
 			x_n[i] = b[i];
-//#pragma omp parallel for
 			for (int j = 0; j < n; ++j)
 			{
 				x_n[i] -= a[i][j] * x[j];
@@ -64,9 +69,9 @@ int main(int argc, char* argv[])
 			x[k] = x_n[k];
 		}
 		memcpy(x, x_n, n * sizeof(double));
-	}
-	while (norm > 1e-8 && ++it < 10000);
-	double elapsed = omp_get_wtime() - start;
+	} while (norm > 1e-8 && ++it < 10000);
+
+	const double elapsed = (omp_get_wtime() - start)*1000;
 
 	printf("Matrix Size: %d*%d Number of iterations(K): %d\n", n, n, it);
 	printf("Total time = %10.8f [ms]\n", elapsed);
