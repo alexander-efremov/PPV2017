@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 		x[i] = b[i] / a[i][i];
 	}
 
-	int it = -1;
+	int it = 0;
 	do
 	{
 #pragma omp parallel for
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 			x[k] = x_n[k];
 		}
 		memcpy(x, x_n, n * sizeof(double));
-	} while (norm > 1e-8 && ++it < 10000);
+	} while (norm > 1e-8 && it++ < 10000);
 
 	const double elapsed = (omp_get_wtime() - start)*1000;
 

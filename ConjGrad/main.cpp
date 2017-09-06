@@ -61,14 +61,13 @@ int main(int argc, char* argv[])
 	memcpy(h, r, n * sizeof(double));
 
 	double norm;
-	int it = -1;
+	int it = 0;
 	do
 	{
 		norm = DBL_MIN;
 		zero_vector(tmp, n);
 
 		//1 Вычисление alpha
-		d1 = 0; d2 = 0;
 		d1 = scalar_mult(r, r, n);
 
 		for (int i = 0; i < n; i++)
@@ -89,7 +88,6 @@ int main(int argc, char* argv[])
 		}
 
 		//3 Вычисление betta
-		d2 = 0.0;
 		d2 = scalar_mult(r_n, r_n, n);
 		beta = d2 / d1;
 
@@ -120,7 +118,7 @@ int main(int argc, char* argv[])
 		zero_vector(x_n, n);
 		zero_vector(r_n, n);
 		zero_vector(h_n, n);
-	} while (norm > 1e-8 && ++it < 10000);
+	} while (norm > 1e-8 && it++ < 10000);
 
 	const double elapsed = GetTimer();
 

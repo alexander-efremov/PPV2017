@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 		x[i] = b[i] / a[i][i];
 	}
 
-	int it = -1;
+	int it = 0;
 	do
 	{
 		double *p = x_n, *last = x_n + n;
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 			x[k] = x_n[k];
 		}
 	}
-	while (norm > 1e-8 && ++it < 10000);
+	while (norm > 1e-8 && it++ < 10000);
 	const double elapsed = GetTimer();
 
 	printf("Matrix Size: %d*%d Number of iterations(K): %d\n", n, n, it);

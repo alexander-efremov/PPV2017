@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 		x[i] = b[i] / a[i][i];
 	}
 
-	int it = -1;
+	int it = 0;
 	do
 	{
 #pragma simd
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 		}
 		memcpy(x, x_n, n * sizeof(double));
 	}
-	while (norm > 1e-8 && ++it < 10000);
+	while (norm > 1e-8 && it++ < 10000);
 	
 	const double elapsed = GetTimer();
 
