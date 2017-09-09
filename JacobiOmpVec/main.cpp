@@ -160,7 +160,7 @@ double* read_vector(int n, char* filepath)
         break;
     }
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
         f >> b[i];
     }

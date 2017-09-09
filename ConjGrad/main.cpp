@@ -9,8 +9,6 @@ double** read_matrix(int n, char* filepath);
 
 double* read_vector(int n, char* filepath);
 
-void zero_vector(double* vector, int n);
-
 double scalar_mult(double* b1, double* b2, int n);
 
 int main(int argc, char* argv[])
@@ -43,26 +41,18 @@ int main(int argc, char* argv[])
     double* h_n = static_cast<double*>(malloc(n * sizeof(double)));
     double* tmp = static_cast<double*>(malloc(n * sizeof(double)));
 
-    zero_vector(x, n);
-    zero_vector(x_n, n);
-    zero_vector(r, n);
-    zero_vector(r_n, n);
-    zero_vector(h, n);
-    zero_vector(h_n, n);
-    zero_vector(tmp, n);
-
     StartTimer();
 
     // 1. Set x0
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
         x[i] = b[i] / a[i][i];
     }
 
     // 2. Calculate residual vector r0 = b - A * x0
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
-        for (int j = 0; j < n; j++)
+        for (int j = 0; j < n; ++j)
         {
             tmp[i] += a[i][j] * x[j];
         }
@@ -77,14 +67,18 @@ int main(int argc, char* argv[])
     do
     {
         norm = DBL_MIN;
-        zero_vector(tmp, n);
+
+        for (int i = 0; i < n; ++i)
+        {
+            tmp[i] = 0.0;
+        }
 
         //1 Calculate alpha
         d1 = scalar_mult(r, r, n);
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; ++i)
         {
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < n; ++j)
             {
                 tmp[i] += a[i][j] * h[j];
             }
@@ -94,28 +88,28 @@ int main(int argc, char* argv[])
         alpha = d1 / d2;
 
         //2 Calculate r_n
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; ++i)
         {
             r_n[i] = r[i] - alpha * tmp[i];
         }
 
-        //3 Calculate betta
+        //3 Calculate beta
         d2 = scalar_mult(r_n, r_n, n);
         beta = d2 / d1;
 
         //4 Calculate h_n
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; ++i)
         {
             h_n[i] = r_n[i] + beta * h[i];
         }
 
         //5 Calculate x_n
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; ++i)
         {
             x_n[i] = x[i] + alpha * h[i];
         }
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; ++i)
         {
             double diff = fabs(x_n[i] - x[i]);
             if (diff > norm)
@@ -126,10 +120,7 @@ int main(int argc, char* argv[])
 
         memcpy(x, x_n, n * sizeof(double));
         memcpy(h, h_n, n * sizeof(double));
-        memcpy(r, r_n, n * sizeof(double));
-        zero_vector(x_n, n);
-        zero_vector(r_n, n);
-        zero_vector(h_n, n);
+        memcpy(r, r_n, n * sizeof(double));        
     } while (norm > 1e-8 && it++ < 10000);
 
     const double elapsed = GetTimer();
@@ -137,7 +128,7 @@ int main(int argc, char* argv[])
     printf("Number of iterations(K): %d\n", it);
     printf("Total time = %10.8f ms\n", elapsed);
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
         free(a[i]);
     }
@@ -187,7 +178,7 @@ double* read_vector(int n, char* filepath)
         break;
     }
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
         f >> b[i];
     }
@@ -249,18 +240,10 @@ double** read_matrix(int n, char* filepath)
     return a;
 }
 
-void zero_vector(double* vector, int n)
-{
-    for (int i = 0; i < n; i++)
-    {
-        vector[i] = 0.0;
-    }
-}
-
 double scalar_mult(double* b1, double* b2, int n)
 {
     double res = 0.0;
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; ++i)
     {
         res += b1[i] * b2[i];
     }
