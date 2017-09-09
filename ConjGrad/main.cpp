@@ -5,9 +5,9 @@
 #include <iostream>
 #include "timer.h"
 
-double** read_matrix(int n);
+double** read_matrix(int n, char* filepath);
 
-double* read_vector(int n);
+double* read_vector(int n, char* filepath);
 
 void zero_vector(double* vector, int n);
 
@@ -15,24 +15,26 @@ double scalar_mult(double* b1, double* b2, int n);
 
 int main(int argc, char* argv[])
 {
-    if (argc ==1)
+    if (argc == 2)
     {
         return 0;
     }
 
     const int n = atoi(argv[1]);
+    char filepath[256];
+    strcpy(filepath, argv[2]);
     int getch = 0;
-    if (argc > 2)
+    if (argc > 3)
     {
-        getch = atoi(argv[2]);
+        getch = atoi(argv[3]);
     }
 
-    printf("Matrix Size: %d*%d\n", n, n);
+    printf("Matrix size: %d*%d\n", n, n);
 
     double alpha, beta, d1, d2;
 
-    double** a = read_matrix(n);
-    double* b = read_vector(n);
+    double** a = read_matrix(n, filepath);
+    double* b = read_vector(n, filepath);
     double* x = static_cast<double*>(malloc(n * sizeof(double)));
     double* x_n = static_cast<double*>(malloc(n * sizeof(double)));
     double* r = static_cast<double*>(malloc(n * sizeof(double)));
@@ -67,7 +69,7 @@ int main(int argc, char* argv[])
         r[i] = b[i] - tmp[i];
     }
 
-    // 3. Calulate direction vector h0 = r0
+    // 3. Calculate direction vector h0 = r0
     memcpy(h, r, n * sizeof(double));
 
     double norm;
@@ -77,7 +79,7 @@ int main(int argc, char* argv[])
         norm = DBL_MIN;
         zero_vector(tmp, n);
 
-        //1 Вычисление alpha
+        //1 Calculate alpha
         d1 = scalar_mult(r, r, n);
 
         for (int i = 0; i < n; i++)
@@ -91,23 +93,23 @@ int main(int argc, char* argv[])
         d2 = scalar_mult(tmp, h, n);
         alpha = d1 / d2;
 
-        //2 Вычисление r_n
+        //2 Calculate r_n
         for (int i = 0; i < n; i++)
         {
             r_n[i] = r[i] - alpha * tmp[i];
         }
 
-        //3 Вычисление betta
+        //3 Calculate betta
         d2 = scalar_mult(r_n, r_n, n);
         beta = d2 / d1;
 
-        //4 Вычисление h_n
+        //4 Calculate h_n
         for (int i = 0; i < n; i++)
         {
             h_n[i] = r_n[i] + beta * h[i];
         }
 
-        //5 Вычисление x_n
+        //5 Calculate x_n
         for (int i = 0; i < n; i++)
         {
             x_n[i] = x[i] + alpha * h[i];
@@ -156,23 +158,29 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-double* read_vector(int n)
+double* read_vector(int n, char* filepath)
 {
     double* b = static_cast<double *>(malloc(n * sizeof(double)));
+    char filename[300];    
+    strcpy(filename, filepath);
     std::ifstream f;
     switch (n)
     {
     case 1024:
-        f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_1024.dat");
+        strcat(filename, "/v_1024.dat");
+        f.open(filename);
         break;
     case 2048:
-        f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_2048.dat");
+        strcat(filename, "/v_2048.dat");
+        f.open(filename);
         break;
     case 4096:
-        f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_4096.dat");
+        strcat(filename, "/v_4096.dat");
+        f.open(filename);
         break;
     case 8192:
-        f.open("C:/Users/HOME/Source/Repos/Jakobi/data/v_8192.dat");
+        strcat(filename, "/v_8192.dat");
+        f.open(filename);
         break;
     default:
         f.open("default.dat");
@@ -189,28 +197,33 @@ double* read_vector(int n)
     return b;
 }
 
-double** read_matrix(int n)
+double** read_matrix(int n, char* filepath)
 {
     double** a = static_cast<double **>(malloc(n * sizeof(double *)));
     for (int i = 0; i < n; ++i)
     {
         a[i] = static_cast<double *>(malloc(n * sizeof(double)));
     }
-
+    char filename[300];
+    strcpy(filename, filepath);
     std::ifstream f;
     switch (n)
     {
     case 1024:
-        f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_1024.dat");
+        strcat(filename, "/m_1024.dat");
+        f.open(filename);
         break;
     case 2048:
-        f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_2048.dat");
+        strcat(filename, "/m_2048.dat");
+        f.open(filename);
         break;
     case 4096:
-        f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_4096.dat");
+        strcat(filename, "/m_4096.dat");
+        f.open(filename);
         break;
     case 8192:
-        f.open("C:/Users/HOME/Source/Repos/Jakobi/data/m_8192.dat");
+        strcat(filename, "/m_8192.dat");
+        f.open(filename);
         break;
     default:
         f.open("default.dat");
