@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <fstream>
-#include <cfloat>
 #include <cmath>
 #include <iostream>
 #include "timer.h"
@@ -29,7 +28,7 @@ int main(int argc, char* argv[])
 
     printf("Matrix size: %d*%d\n", n, n);
 
-    double alpha, beta, d1, d2;
+    double alpha, beta, d1, d2, diff;
 
     double** a = read_matrix(n, filepath);
     double* b = read_vector(n, filepath);
@@ -66,8 +65,6 @@ int main(int argc, char* argv[])
     int it = 0;
     do
     {
-        norm = DBL_MIN;
-
         for (int i = 0; i < n; ++i)
         {
             tmp[i] = 0.0;
@@ -109,18 +106,18 @@ int main(int argc, char* argv[])
             x_n[i] = x[i] + alpha * h[i];
         }
 
+        norm = fabs(x_n[0] - x[0]);
         for (int i = 0; i < n; ++i)
         {
-            double diff = fabs(x_n[i] - x[i]);
+            diff = fabs(x_n[i] - x[i]);
             if (diff > norm)
             {
                 norm = diff;
             }
+            x[i] = x_n[i];
+            h[i] = h_n[i];
+            r[i] = r_n[i];
         }
-
-        memcpy(x, x_n, n * sizeof(double));
-        memcpy(h, h_n, n * sizeof(double));
-        memcpy(r, r_n, n * sizeof(double));        
     } while (norm > 1e-8 && it++ < 10000);
 
     const double elapsed = GetTimer();

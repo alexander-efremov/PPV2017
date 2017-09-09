@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <fstream>
-#include <cfloat>
 #include <cmath>
 #include <omp.h>
 #include <iostream>
@@ -69,8 +68,6 @@ int main(int argc, char* argv[])
         {
             x_n[i] = 0.0;
         }
-
-        norm = DBL_MIN;
 
 #pragma omp parallel for
         for (int i = 0; i < n; ++i)

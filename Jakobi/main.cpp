@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <fstream>
-#include <cfloat>
 #include <cmath>
 #include <iostream>
 #include "timer.h"
@@ -44,9 +43,10 @@ int main(int argc, char* argv[])
     int it = 0;
     do
     {
-        double *p = x_n, *last = x_n + n;
-        while (p != last) *p++ = 0.0;
-        norm = DBL_MIN;
+        for (int i = 0; i < n; ++i)
+        {
+            x_n[i] = 0.0;
+        }
 
         for (int i = 0; i < n; ++i)
         {
@@ -75,8 +75,8 @@ int main(int argc, char* argv[])
             }
             x[k] = x_n[k];
         }
-    }
-    while (norm > 1e-8 && it++ < 10000);
+    } while (norm > 1e-8 && it++ < 10000);
+
     const double elapsed = GetTimer();
 
     printf("Number of iterations(K): %d\n", it);

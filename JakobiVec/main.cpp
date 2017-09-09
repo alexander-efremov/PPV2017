@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <fstream>
-#include <cfloat>
 #include <cmath>
 #include <iostream>
 #include "timer.h"
@@ -52,8 +51,6 @@ int main(int argc, char* argv[])
         {
             x_n[i] = 0.0;
         }
-        
-        norm = DBL_MIN;
 
         for (int i = 0; i < n; ++i)
         {
@@ -68,6 +65,7 @@ int main(int argc, char* argv[])
             x_n[i] /= a[i][i];
         }
 
+        norm = fabs(x[0] - x_n[0]);
         for (int k = 0; k < n; ++k)
         {
             diff = fabs(x_n[k] - x[k]);
@@ -77,9 +75,7 @@ int main(int argc, char* argv[])
             }
             x[k] = x_n[k];
         }
-        memcpy(x, x_n, n * sizeof(double));
-    }
-    while (norm > 1e-8 && it++ < 10000);
+    } while (norm > 1e-8 && it++ < 10000);
     
     const double elapsed = GetTimer();
 

@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <fstream>
-#include <cfloat>
 #include <cmath>
 #include <omp.h>
 #include <iostream>
@@ -36,7 +35,7 @@ int main(int argc, char* argv[])
     double* x = static_cast<double *>(malloc(n * sizeof(double)));
     double* x_n = static_cast<double *>(malloc(n * sizeof(double)));
 
-    double norm;
+    double norm, diff;
 
     const double start = omp_get_wtime();
 
@@ -55,8 +54,6 @@ int main(int argc, char* argv[])
             x_n[i] = 0.0;
         }
 
-        norm = DBL_MIN;
-
 #pragma omp parallel for
         for (int i = 0; i < n; ++i)
         {
@@ -69,16 +66,16 @@ int main(int argc, char* argv[])
             x_n[i] /= a[i][i];
         }
 
+        norm = fabs(x[0] - x_n[0]);
         for (int k = 0; k < n; ++k)
         {
-            double diff = fabs(x_n[k] - x[k]);
+            diff = fabs(x_n[k] - x[k]);
             if (diff > norm)
             {
                 norm = diff;
             }
             x[k] = x_n[k];
         }
-        memcpy(x, x_n, n * sizeof(double));
     } while (norm > 1e-8 && it++ < 10000);
 
     const double elapsed = (omp_get_wtime() - start)*1000;
