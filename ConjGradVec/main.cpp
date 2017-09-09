@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 #pragma simd
     for (int i = 0; i < n; ++i)
     {
-        x[i] = b[i] / a[i][i];
+        x[i] = (double)(b[i] / a[i][i]);
     }
 
     // 2. Calculate residual vector r0 = b - A * x0
@@ -73,17 +73,12 @@ int main(int argc, char* argv[])
     int it = 0;
     do
     {
-#pragma simd
-        for (int i = 0; i < n; ++i)
-        {
-            tmp[i] = 0.0;
-        }
-
         // 1 Calculate alpha
         d1 = scalar_mult(r, r, n);
 
         for (int i = 0; i < n; ++i)
         {
+            tmp[i] = 0.0;
 #pragma simd
             for (int j = 0; j < n; ++j)
             {
@@ -105,17 +100,11 @@ int main(int argc, char* argv[])
         d2 = scalar_mult(r_n, r_n, n);
         beta = d2 / d1;
 
-        // 4 Calculate h_n
+        // 4 Calculate h_n and x_n
 #pragma simd
         for (int i = 0; i < n; ++i)
         {
             h_n[i] = r_n[i] + beta * h[i];
-        }
-
-        // 5 Calculate x_n
-#pragma simd
-        for (int i = 0; i < n; ++i)
-        {
             x_n[i] = x[i] + alpha * h[i];
         }
 

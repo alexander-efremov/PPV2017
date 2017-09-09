@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
         }
     } while (norm > 1e-8 && it++ < 10000);
 
-    const double elapsed = (omp_get_wtime() - start)*1000;
+    const double elapsed = (omp_get_wtime() - start) * 1000;
 
     printf("Number of iterations(K): %d\n", it);
     printf("Total time = %10.8f ms\n", elapsed);
