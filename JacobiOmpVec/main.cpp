@@ -11,7 +11,7 @@ double* read_vector(int n, char* filepath);
 
 int main(int argc, char* argv[])
 {
-    if (argc == 2)
+    if (argc <= 3)
     {
         return 0;
     }
@@ -19,19 +19,17 @@ int main(int argc, char* argv[])
     const int n = atoi(argv[1]);
     char filepath[256];
     strcpy(filepath, argv[2]);
+    const int num_threads = atoi(argv[3]);
     int getch = 0;
-    if (argc > 3)
+    if (argc > 4)
     {
-        getch = atoi(argv[3]);
+        getch = atoi(argv[4]);
     }
 
     printf("Matrix size: %d*%d\n", n, n);
 
-    int max_thread_number = omp_get_max_threads();
-
-    std::cout << "The thread number: " << max_thread_number << std::endl;
-
-    omp_set_num_threads(max_thread_number);
+    omp_set_num_threads(num_threads);
+    printf("The number of threads: %d\n", omp_get_max_threads());
 
     double** a = read_matrix(n, filepath);
     double* b = read_vector(n, filepath);
@@ -53,8 +51,8 @@ int main(int argc, char* argv[])
     {
 #pragma omp master
         {
-            max_thread_number = omp_get_num_threads();
-            n1 = ((n / max_thread_number) / 8) * max_thread_number * 8;
+            int tn = omp_get_num_threads();
+            n1 = ((n / tn) / 8) * tn * 8;
         }
     }
     do

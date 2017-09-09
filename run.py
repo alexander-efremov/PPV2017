@@ -1,36 +1,42 @@
 import subprocess as s
 
-path = "C:/Users/HOME/Source/Repos/Jakobi/data"
+datapath = "C:/Users/HOME/Source/Repos/Jakobi/data"
+exepath = "C:/Users/HOME/Source/Repos/Jakobi/x64/Release"
 sizes = [1024, 2048, 4096, 8192]
+tns = [4, 8]
+#tns = [1, 2, 4, 8]
+#tns = [1, 16, 32, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240] #phi
+
 for x in sizes:
-    print("[Jakoby " + str(x) + " x " + str(x) + "]")
-    s.call(["C:/Users/HOME/Source/Repos/Jakobi/x64/Release/Jakobi.exe", str(x), path])
-    print("")
+	print("[Jakoby " + str(x) + " x " + str(x) + "]")
+	s.call([exepath + "/Jakobi.exe", str(x), datapath])
+	print("")
 
-    print("[JakobiVec " + str(x) + " x " + str(x) + "]")
-    s.call(["C:/Users/HOME/Source/Repos/Jakobi/x64/Release/JakobiVec.exe", str(x), path])
-    print("")
+	print("[JakobiVec " + str(x) + " x " + str(x) + "]")
+	s.call([exepath + "/JakobiVec.exe", str(x), datapath])
+	print("")
 
-    print("[JacobiOmp " + str(x) + " x " + str(x) + "]")
-    s.call(["C:/Users/HOME/Source/Repos/Jakobi/x64/Release/JacobiOmp.exe", str(x), path])
-    print("")
-    
-    print("[JacobiOmpVec " + str(x) + " x " + str(x) + "]")
-    s.call(["C:/Users/HOME/Source/Repos/Jakobi/x64/Release/JacobiOmpVec.exe", str(x), path])
-    print("")
+	print("[ConjGrad " + str(x) + " x " + str(x) + "]")
+	s.call([exepath + "/ConjGrad.exe", str(x), datapath])
+	print("")
 
-    print("[ConjGrad " + str(x) + " x " + str(x) + "]")
-    s.call(["C:/Users/HOME/Source/Repos/Jakobi/x64/Release/ConjGrad.exe", str(x), path])
-    print("")
+	print("[ConjGradVec " + str(x) + " x " + str(x) + "]")
+	s.call([exepath + "/ConjGradVec.exe", str(x), datapath])
+	print("")
+        
+	for tn in tns:                
+		print("[JacobiOmp " + str(x) + " x " + str(x) + "]")		
+		s.call([exepath + "/JacobiOmp.exe", str(x), datapath, str(tn)])
+		print("")
+			
+		print("[JacobiOmpVec " + str(x) + " x " + str(x) + "]")
+		s.call([exepath + "/JacobiOmpVec.exe", str(x), datapath, str(tn)])
+		print("")
 
-    print("[ConjGradVec " + str(x) + " x " + str(x) + "]")
-    s.call(["C:/Users/HOME/Source/Repos/Jakobi/x64/Release/ConjGradVec.exe", str(x), path])
-    print("")
+		print("[ConjGradOmp " + str(x) + " x " + str(x) + "]")
+		s.call([exepath + "/ConjGradOmp.exe", str(x), datapath, str(tn)])
+		print("")
 
-    print("[ConjGradOmp " + str(x) + " x " + str(x) + "]")
-    s.call(["C:/Users/HOME/Source/Repos/Jakobi/x64/Release/ConjGradOmp.exe", str(x), path])
-    print("")
-
-    print("[ConjGradOmpVec " + str(x) + " x " + str(x) + "]")
-    s.call(["C:/Users/HOME/Source/Repos/Jakobi/x64/Release/ConjGradOmpVec.exe", str(x), path])
-    print("")
+		print("[ConjGradOmpVec " + str(x) + " x " + str(x) + "]")
+		s.call([exepath + "/ConjGradOmpVec.exe", str(x), datapath, str(tn)])
+		print("")

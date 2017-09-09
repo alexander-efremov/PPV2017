@@ -15,7 +15,7 @@ double scalar_mult(double* b1, double* b2, int n);
 
 int main(int argc, char* argv[])
 {
-    if (argc == 2)
+    if (argc <= 2)
     {
         return 0;
     }
@@ -259,7 +259,7 @@ void zero_vector(double* vector, int n)
 
 double scalar_mult(double* b1, double* b2, int n)
 {
-    double res = 0;
+    double res = 0.0;
     for (int i = 0; i < n; i++)
     {
         res += b1[i] * b2[i];
